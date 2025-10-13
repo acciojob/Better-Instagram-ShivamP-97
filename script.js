@@ -1,29 +1,47 @@
-//your code here
-let draggedDiv = null;
+let draggedElement = null;
 
-const imageDivs = document.querySelectorAll('.image');
+// Select all draggable image containers
+const images = document.querySelectorAll('.image');
 
-imageDivs.forEach((div) => {
-  div.addEventListener('dragstart', (e) => {
-    draggedDiv = e.target;
-    e.target.classList.add('selected'); 
+images.forEach(image => {
+  // Drag start
+  image.addEventListener('dragstart', (e) => {
+    draggedElement = e.target;
+    draggedElement.classList.add('selected');
   });
 
-  div.addEventListener('dragend', (e) => {
-    e.target.classList.remove('selected');
+  // Drag end
+  image.addEventListener('dragend', () => {
+    draggedElement.classList.remove('selected');
   });
 
-  div.addEventListener('dragover', (e) => {
-    e.preventDefault(); 
-  });
-
-  div.addEventListener('drop', (e) => {
+  // Drag over
+  image.addEventListener('dragover', (e) => {
     e.preventDefault();
+    if (e.target !== draggedElement) {
+      e.currentTarget.classList.add('drag-over');
+    }
+  });
 
-    if (draggedDiv !== e.target) {
-      const temp = draggedDiv.style.backgroundImage;
-      draggedDiv.style.backgroundImage = e.target.style.backgroundImage;
-      e.target.style.backgroundImage = temp;
+  // Drag leave
+  image.addEventListener('dragleave', (e) => {
+    e.currentTarget.classList.remove('drag-over');
+  });
+
+  // Drop
+  image.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const target = e.currentTarget;
+    target.classList.remove('drag-over');
+
+    if (draggedElement !== target) {
+      const draggedImg = draggedElement.querySelector('img');
+      const targetImg = target.querySelector('img');
+
+      // Swap image sources
+      const tempSrc = draggedImg.src;
+      draggedImg.src = targetImg.src;
+      targetImg.src = tempSrc;
     }
   });
 });
