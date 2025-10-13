@@ -1,47 +1,49 @@
-let draggedElement = null;
+let draggedElem = null;
 
-// Select all draggable image containers
-const images = document.querySelectorAll('.image');
+const imageDivs = document.querySelectorAll('.image');
 
-images.forEach(image => {
-  // Drag start
-  image.addEventListener('dragstart', (e) => {
-    draggedElement = e.target;
-    draggedElement.classList.add('selected');
+imageDivs.forEach((div) => {
+  // Start dragging
+  div.addEventListener('dragstart', (e) => {
+    draggedElem = e.target;
+    e.target.classList.add('selected');
   });
 
-  // Drag end
-  image.addEventListener('dragend', () => {
-    draggedElement.classList.remove('selected');
+  // End dragging
+  div.addEventListener('dragend', (e) => {
+    e.target.classList.remove('selected');
   });
 
-  // Drag over
-  image.addEventListener('dragover', (e) => {
+  // Allow drop
+  div.addEventListener('dragover', (e) => {
     e.preventDefault();
-    if (e.target !== draggedElement) {
-      e.currentTarget.classList.add('drag-over');
-    }
   });
 
-  // Drag leave
-  image.addEventListener('dragleave', (e) => {
-    e.currentTarget.classList.remove('drag-over');
+  // Optional: visual effect when dragged over
+  div.addEventListener('dragenter', (e) => {
+    e.preventDefault(); // Needed for dragover to work consistently
+    e.target.classList.add('highlight');
   });
 
-  // Drop
-  image.addEventListener('drop', (e) => {
+  // Remove highlight on drag leave
+  div.addEventListener('dragleave', (e) => {
+    e.target.classList.remove('highlight');
+  });
+
+  // On drop, swap background images
+  div.addEventListener('drop', (e) => {
     e.preventDefault();
-    const target = e.currentTarget;
-    target.classList.remove('drag-over');
+    e.target.classList.remove('highlight');
 
-    if (draggedElement !== target) {
-      const draggedImg = draggedElement.querySelector('img');
-      const targetImg = target.querySelector('img');
+    const dropTarget = e.target.closest('.image');
 
-      // Swap image sources
-      const tempSrc = draggedImg.src;
-      draggedImg.src = targetImg.src;
-      targetImg.src = tempSrc;
+    if (draggedElem && dropTarget && draggedElem !== dropTarget) {
+      const draggedImg = getComputedStyle(draggedElem).backgroundImage;
+      const dropImg = getComputedStyle(dropTarget).backgroundImage;
+
+      // Swap background images
+      draggedElem.style.backgroundImage = dropImg;
+      dropTarget.style.backgroundImage = draggedImg;
     }
   });
 });
