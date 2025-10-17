@@ -1,42 +1,30 @@
 let draggedElement = null;
 
-const images = document.querySelectorAll('.image');
-        
-images.forEach(
-        image=>{
-                //startdragging
-        image.addEventListener('dragstart', function(e){
+document.querySelectorAll('.image').forEach(image => {
+  image.addEventListener('dragstart', e => {
+    draggedElement = image;
+    image.classList.add('dragging');
+  });
 
-        draggedElement=image;
-                    // alert(draggedElement)
-                })
+  image.addEventListener('dragend', e => {
+    image.classList.remove('dragging');
+    draggedElement = null;
+  });
 
-        image.addEventListener('dragenter', function(e){
-        e.preventDefault();
-                })
+  image.addEventListener('dragover', e => {
+    e.preventDefault(); // Needed to allow dropping
+  });
 
-        image.addEventListener('dragover', function(e){
-        e.preventDefault();
-                })
+  image.addEventListener('drop', e => {
+    e.preventDefault();
+    if (draggedElement && draggedElement !== e.currentTarget) {
+      const dragImg = draggedElement.querySelector('img');
+      const dropImg = e.currentTarget.querySelector('img');
 
-                // image.addEventListener('dragend', function(e){
-                //     draggedElement=null;
-                //     // alert(draggedElement)
-                // })
-
-         image.addEventListener('drop', function(e){
-
-                    // alert('dropped')
-                    // if(e.target!==draggedElement){
-                    // console.log(getComputedStyle(draggedElement))
-        const draggedBg = getComputedStyle(draggedElement).backgroundImage;
-        const targetBg = getComputedStyle(e.target).backgroundImage;
-                        // alert(draggedBg)
-                        //swap
-        draggedElement.style.backgroundImage=targetBg;
-        e.target.style.backgroundImage=draggedBg;
-
-                    
-                })
-            }
-        )
+      // Swap the src attributes of the <img> elements
+      const tempSrc = dragImg.src;
+      dragImg.src = dropImg.src;
+      dropImg.src = tempSrc;
+    }
+  });
+});
