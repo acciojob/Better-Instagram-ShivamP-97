@@ -1,30 +1,25 @@
-let draggedElement = null;
-
-document.querySelectorAll('.image').forEach(image => {
-  image.addEventListener('dragstart', e => {
-    draggedElement = image;
-    image.classList.add('dragging');
+const images = document.querySelectorAll(".image");
+let draggedItem = null;
+images.forEach((image) => {
+  image.addEventListener("dragstart", (e) => {
+    draggedItem = e.target;
+    e.target.style.opacity = "0.5";
   });
-
-  image.addEventListener('dragend', e => {
-    image.classList.remove('dragging');
-    draggedElement = null;
+  image.addEventListener("dragend", (e) => {
+    e.target.style.opacity = "1";
+    draggedItem = null;
   });
-
-  image.addEventListener('dragover', e => {
-    e.preventDefault(); // Needed to allow dropping
-  });
-
-  image.addEventListener('drop', e => {
+  image.addEventListener("dragover", (e) => {
     e.preventDefault();
-    if (draggedElement && draggedElement !== e.currentTarget) {
-      const dragImg = draggedElement.querySelector('img');
-      const dropImg = e.currentTarget.querySelector('img');
-
-      // Swap the src attributes of the <img> elements
-      const tempSrc = dragImg.src;
-      dragImg.src = dropImg.src;
-      dropImg.src = tempSrc;
+  });
+  image.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const dropTarget = e.target;
+    if (draggedItem !== dropTarget) {
+      const draggedItemBg = window.getComputedStyle(draggedItem).backgroundImage;
+      const dropTargetBg = window.getComputedStyle(dropTarget).backgroundImage;
+      draggedItem.style.backgroundImage = dropTargetBg;
+      dropTarget.style.backgroundImage = draggedItemBg;
     }
   });
 });
